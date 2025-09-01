@@ -1,0 +1,180 @@
+#
+#For detailed view of mmWave Radar configuration structure
+#please refer 
+#ti\control\mmwavelink\docs\doxygen\html\index.html
+#
+#For better understanding the structs and configuration
+#please refer
+#fpga_udp\src\mmwaveDFP_2G\ti\control\mmwavelink\include\rl_sensor.h
+# 
+
+#
+#Global configuration
+#Firmware download enable/disable; 1 - Enable; 0 - Disable
+#mmWaveLink logging enable/disable; 1 - Enable; 0 - Disable
+#Transport mode; 1 - I2C; 0 - SPI
+#Flash connected enable/disable; 1 - Enable; 0 - Disable
+#
+#rlDevGlobalCfg_t
+#
+#LinkAdvanceFrameTest=1;
+EnableFwDownload=1;
+EnableMmwlLogging=0;
+TransferMode=0;
+IsFlashConnected=1;
+#END
+
+#
+#power on master arguments, please modify if needed.
+#rlClientCbs_t: crcType 0:16Bit/1:32Bit/2:64Bit, 
+# ackTimeout: This timeout value can vary on different PC, user needs to recalibrate 
+#  this value based on the system where this application runs. Ideally ackTimeout 
+#  should be in range of ~5mSec 
+#
+crcType=1;              #modify
+ackTimeout=1000;        #modify
+#END
+
+#
+#channel config parameters, please modify if needed.
+#rlChanCfg_t
+#
+channelTx=3;    #modify
+channelRx=15;   #modify
+cascading=0;    #modify
+#END
+
+
+#
+#ADC out config parameters, please modify if needed.
+#rlAdcOutCfg_t
+#
+adcBits=2;          #modify
+adcFormat=1;        #modify
+#END
+
+
+
+#
+#DATA format config parameters, please modify if needed.
+#rlDevDataFmtCfg_t
+#
+rxChanEn=15;            #modify
+adcBitsD=2;             #modify
+adcFmt=1;               #modify
+iqSwapSel=0;            #modify
+chInterleave=0;         #modify
+#END
+
+#
+#Low power config Paramters, please modify if needed.
+#rlLowPowerModeCfg_t
+#
+anaCfg=0;       #modify
+lpAdcMode=0;    #modify
+#END
+
+#
+#Data Path config parameters, please modify if needed
+#rlDevDataPathCfg_t
+#   
+intfSel=1;              #modify
+transferFmtPkt0=1;      #modify
+transferFmtPkt1=0;      #modify
+cqConfig=2;             #modify
+cq0TransSize=0;
+cq1TransSize=0;
+cq2TransSize=0;
+#END
+
+#
+#LVDS clock config parameters, please modify if needed
+#rlDevDataPathClkCfg_t
+#
+laneClk=1;      #modify
+dataRate=1;     #modify
+#END
+
+#
+#SET HSI clock parameters, please modify if needed.
+#rlDevHsiClk_t
+#
+hsiClk=9    #
+#END
+
+#
+#LANE config parameters, please modify if needed.
+#rlDevLaneEnable_t
+#
+laneEn=15;              #modify
+#END
+
+#
+#LVDS Lane Config parameters, please modify if needed.
+#rlDevLvdsLaneCfg_t
+#
+laneFmtMap=0;               #modify     
+laneParamCfg=1;             #modify     
+#END
+
+#
+##Programmable Filter config parameters, please modify if needed.
+##rlRfProgFiltConf_t
+##
+#profileId=0;            #
+#coeffStartIdx=0;        #
+#progFiltLen=14;         #
+#progFiltFreqShift=100;  #
+##END
+
+#
+#Profile config parameters, please modify if needed.
+#rlProfileCfg_t
+#
+profileId=0;                    #modify
+pfVcoSelect=0;
+startFreqConst=1435388860;      #modify
+idleTimeConst=10000;            #modify
+adcStartTimeConst=600;          #modify
+rampEndTime=6000;               #modify
+txOutPowerBackoffCode=0;        #modify
+txPhaseShifter=0;               #modify
+freqSlopeConst=621;#1200;  680; #modify
+txStartTime=0;                  #modify
+numAdcSamples=256;              #modify
+digOutSampleRate=10000;         #modify
+hpfCornerFreq1=0;               #modify
+hpfCornerFreq2=0;               #modify
+rxGain=94;#32+2<<6              #modify
+
+#END
+
+#
+#Chirp Configuration parameters, please modify if needed.
+#rlChirpCfg_t
+#
+chirpStartIdx=0;                #modify
+chirpEndIdx=0;                  #modify
+profileIdCPCFG=0;               #modify
+startFreqVar=0;                 #modify
+freqSlopeVar=0;                 #modify
+idleTimeVar=0;                  #modify
+adcStartTimeVar= 0;             #modify 
+txEnable=3;                    #modify
+#END
+
+#
+#Frame configuration parameters, please modify if needed.
+#rlFrameCfg_t
+#
+chirpStartIdxFCF=0;             #modify
+chirpEndIdxFCF=0;               #modify
+frameCount=8;                   #modify
+loopCount=128;                  #modify
+periodicity=14000000;           #modify
+triggerDelay=0;                 #modify
+numAdcSamples=512;              #modify
+triggerSelect=1;                #modify
+#END
+
+
