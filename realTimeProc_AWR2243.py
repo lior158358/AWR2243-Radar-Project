@@ -264,7 +264,8 @@ try:
     PrintCalcParams(ADC_PARAMS_l)               
 
     input("press ENTER to start capture...")
-
+    
+    # 5. Send start capture commands via Ethernet UDP
     dca.stream_start()
     dca.fastRead_in_Cpp_thread_start(frameNumInBuf) # Start the UDP capture thread
 

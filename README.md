@@ -87,10 +87,10 @@ sudo ldconfig -v
   - for Windows: `python3 -c "import fpga_udp;fpga_udp.AWR2243_firmwareDownload()"`
   - for Linux: `sudo python3 -c "import fpga_udp;fpga_udp.AWR2243_firmwareDownload()"`
   - If you see "MSS Patch version [ 2. 2. 2. 0]", flashing was successful.
-2.  Open [captureADC_AWR2243.py](#captureadc_awr2243py), modify as needed, enter the txt config file path, and start data collection.
-3.  Modify [text](configFiles/AWR2243_mmwaveconfig.txt) if needed.
-4.  If parameters are unsatisfactory, modify and verify with [testParam_AWR2243.ipynb](#testparam_awr2243ipynb).
-5.  Open [testDecode_AWR2243.ipynb](#testdecode_awr2243ipynb) to collected and save raw data, post - proccess and plot.
+2.  Modify [text](configFiles/AWR2243_mmwaveconfig.txt) if needed.
+3.  If parameters are unsatisfactory, modify and verify with [testParam_AWR2243.ipynb](#testparam_awr2243ipynb).
+4.  Open [realTimeProc_AWR2243.py](#realTimeProc_AWR2243py), modify as needed, enter the txt config file path, and start data collection and post - proccess.
+5.  Open [testDecode_AWR2243.ipynb](#testdecode_awr2243ipynb) to post - proccess and plot raw data.
 
 ## Example
 
@@ -100,7 +100,7 @@ sudo ldconfig -v
  - To enable, export the profile and set the appropriate enable bits.
  - `adcbufCfg` should be set as below, and the third parameter of `lvdsStreamCfg` should be set to 1. See mmwave_sdk_user_guide.pdf for details:
   - adcbufCfg -1 0 1 1 1
-  - lvdsStreamCfg -1 0 1 0 
+  - lvdsStreamCfg -1 0 1 0
 #### 3. "cf.json" data capture card config file requirements
  - See TI_DCA1000EVM_CLI_Software_UserGuide.pdf for details.
  - LVDS Mode:
@@ -116,24 +116,31 @@ sudo ldconfig -v
      - "packetDelay_us": 25 (us)   ~   325 (Mbps)
      - "packetDelay_us": 50 (us)   ~   193 (Mbps)
 
-### ***captureADC_AWR2243.py***
-Example code for collecting raw ADC IQ data (AWR2243 only).
+
+
+### ***realTimeProc_AWR2243.py***
+Example code for real-time loop collection and online processing of raw ADC IQ data.
 #### 1. General workflow for AWR2243 raw data collection
- 1. Reset radar and DCA1000 (`reset_radar`, `reset_fpga`)
- 2. Initialize radar via SPI and configure parameters (`AWR2243_init`, `AWR2243_setFrameCfg`) (root permission needed on Linux)
- 3. Send FPGA configuration commands via UDP (`config_fpga`)
- 4. Send record data packet configuration via UDP (`config_record`)
- 5. Send start capture command via UDP (`stream_start`)
- 6. Start UDP data packet receive thread (`fastRead_in_Cpp_async_start`)
- 7. Start radar via SPI (`AWR2243_sensorStart`)
- 8. 1. (optional, if numFrame==0 this is required) Stop radar via SPI (`AWR2243_sensorStop`)
-  2. (optional, if numFrame==0 this must not be present) Wait for radar capture to finish (`AWR2243_waitSensorStop`)
- 9. (optional, if numFrame==0 this is required) Send stop capture command via UDP (`stream_stop`)
- 10. Wait for UDP receive thread to finish and parse raw data (`fastRead_in_Cpp_async_wait`)
- 11. Save raw data to file for offline processing (`tofile`)
- 12. Power off radar and config via SPI (`AWR2243_poweroff`)
+1. Reset the radar and DCA1000 (reset_radar, reset_fpga)
+2. Initialize the radar via SPI and configure the corresponding parameters (AWR2243_init, AWR2243_setFrameCfg) (requires root privileges on Linux)
+3. Send FPGA configuration commands via Ethernet UDP (config_fpga)
+4. Send record data packet configuration commands via Ethernet UDP (config_record)
+5. Send start capture commands via Ethernet UDP (stream_start)
+6. Start the radar via SPI (AWR2243_sensorStart)
+7. Loop to receive UDP data packets + parse raw data + real-time data processing (fastRead_in_Cpp, postProc) (numLoops==1, modify for more captures)
+8.1. (optional, required if numFrame == 0) Stop the radar via SPI (AWR2243_sensorStop)
+8.2. (optional, not allowed if numFrame == 0) Wait for the radar to finish capturing (AWR2243_waitSensorStop)
+9. (optional, required if numFrame == 0) Send stop capture commands via Ethernet UDP (stream_stop)
+10. Turn off radar power and configuration files via SPI (AWR2243_poweroff)
 #### 2. "mmwaveconfig.txt" mmWave radar config file requirements
  - Modify for your desiered waveform
+ - current parameters are defult according TI's mmwaveStudio demo
+ - to add new config parameters:
+  2.1 look at [AWR1xxx Radar Interface Control Document](https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/1023/8787.AWR1xx_5F00_Radar_5F00_Interface_5F00_Control.pdf) to see what parameter you need to modify.
+  2.2 you my use [Consolidated LUA and mmWaveLink API Mapping in mmWaveStudio](https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/1023/Consolidated-LUA-and-mmWaveLink-API-Mapping-in-mmWaveStudio_2D00_v23_2D00_20220323_5F00_104018.pdf) 
+  2.3 in mmwaveStudio you can the name of the Lua API function name and help to see its parameters.
+  For example "help ar1.ChanNAdcConfig"
+  2.4 make sure the [mmwave_config.c](.\fpga_udp\src\mmwaveDFP_2G\ti\example\mmWaveLink_SingleChip_NonOS_Example\mmw_config.c) has the exact same name so it could read it and write it in mmwaveconfig.txt in the same order mmwave_config.c reads it.
 #### 3. "cf.json" data capture card config file requirements
 - See TI_DCA1000EVM_CLI_Software_UserGuide.pdf for details.
 - LVDS Mode:
@@ -150,19 +157,8 @@ Example code for collecting raw ADC IQ data (AWR2243 only).
       - "packetDelay_us": 50 (us)   ~   193 (Mbps)
 
 
-
-### ***realTimeProc_AWR2243.py***
-Example code for real-time loop collection and online processing of raw ADC IQ data (AWR2243 only).
-#### 1. General workflow for AWR2243 raw data collection
- - Omitted
-#### 2. "mmwaveconfig.txt" mmWave radar config file requirements
- - Modify for your desiered waveform
-#### 3. "cf.json" data capture card config file requirements
- - Omitted
-
-
 ### ***testDecode_AWR2243.ipynb***
-Example code for parsing raw ADC IQ data (AWR2243 only). Open with Jupyter (VS Code with Jupyter plugin recommended).
+Example code for parsing raw ADC IQ data. Open with Jupyter (VS Code with Jupyter plugin recommended).
 #### 1. Parsing LVDS ADC raw IQ data with numpy
  - Import relevant libraries
  - Set parameters
@@ -178,40 +174,5 @@ AWR2243 mmWave radar configuration parameter validation. Open with Jupyter (VS C
  - Constraints are based on IWR1843 device specs; see datasheet, SDK user guide, and chirp programming manual.
  - If parameters meet constraints, debug info is shown in cyan; otherwise, purple or yellow.
  - Note: Constraints may not be fully accurate; even if all parameters pass, operation may still fail in rare cases.
-
-### ***testDecodeADCdata.mlx***
-MATLAB example code for parsing raw ADC IQ data.
- - Set parameters
- - Load saved bin raw ADC data
- - Parse and reconstruct data format
- - Plot time-domain IQ waveform
- - Compute Range-FFT (1D FFT + static clutter removal)
- - Compute Doppler-FFT
- - 1D-CA-CFAR Detector on Range-FFT
- - Compute Azimuth-FFT
-
-### ***testGtrack.py***
-Test the gTrack algorithm written in C using cppyy. This is TI's group target tracking algorithm: input is point cloud, output is trajectory.
-
-The algorithm tracks multiple targets, each represented by a set of measurement points.
-Each measurement point contains detection info, e.g., range, azimuth, elevation (for 3D), and radial velocity.
-
-Instead of tracking individual reflections, the algorithm predicts and updates the location and dispersion of the group.
-
-A group is defined as the set of measurements (typically tens to hundreds) associated with a real-life target.
-
-Supports tracking in 2D or 3D as a build-time option:
- - 2D: inputs range/azimuth/doppler, tracks in 2D cartesian space.
- - 3D: inputs range/azimuth/elevation/doppler, tracks in 3D cartesian space.
-#### Input/output
- - Inputs: Point Cloud (hundreds of measurements/reflections)
- - Outputs: Target List (array of target descriptors with properties)
- - Optionally outputs Target Index (array of target IDs for each measurement)
-#### Features
- - Uses extended Kalman Filter for target motion in Cartesian coordinates.
- - Supports constant velocity and constant acceleration models.
- - Uses 3D/4D Mahalanobis distances for gating and max-likelihood criteria for point-to-track association.
-                                   
-
 
 
