@@ -137,10 +137,10 @@ Example code for real-time loop collection and online processing of raw ADC IQ d
  - current parameters are defult according TI's mmwaveStudio demo
  - to add new config parameters:
   2.1 look at [AWR1xxx Radar Interface Control Document](https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/1023/8787.AWR1xx_5F00_Radar_5F00_Interface_5F00_Control.pdf) to see what parameter you need to modify.
-  2.2 you my use [Consolidated LUA and mmWaveLink API Mapping in mmWaveStudio](https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/1023/Consolidated-LUA-and-mmWaveLink-API-Mapping-in-mmWaveStudio_2D00_v23_2D00_20220323_5F00_104018.pdf) 
-  2.3 in mmwaveStudio you can the name of the Lua API function name and help to see its parameters.
+   2.2 you my use [Consolidated LUA and mmWaveLink API Mapping in mmWaveStudio](https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/1023/Consolidated-LUA-and-mmWaveLink-API-Mapping-in-mmWaveStudio_2D00_v23_2D00_20220323_5F00_104018.pdf)
+   2.3 in mmwaveStudio you can the name of the Lua API function name and help to see its parameters.
   For example "help ar1.ChanNAdcConfig"
-  2.4 make sure the [mmwave_config.c](.\fpga_udp\src\mmwaveDFP_2G\ti\example\mmWaveLink_SingleChip_NonOS_Example\mmw_config.c) has the exact same name so it could read it and write it in mmwaveconfig.txt in the same order mmwave_config.c reads it.
+2.4 make sure the [mmwave_config.c](.\fpga_udp\src\mmwaveDFP_2G\ti\example\mmWaveLink_SingleChip_NonOS_Example\mmw_config.c) has the exact same name so it could read it and write it in mmwaveconfig.txt in the same order mmwave_config.c reads it.
 #### 3. "cf.json" data capture card config file requirements
 - See TI_DCA1000EVM_CLI_Software_UserGuide.pdf for details.
 - LVDS Mode:
