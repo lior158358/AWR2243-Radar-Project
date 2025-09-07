@@ -30,6 +30,19 @@ For RF-only sensors, control and configuration commands are sent via SPI/I2C, an
 - Connect the RJ45 Ethernet cable to your system.
 - Set a fixed IP for the local interface: `192.168.33.30`.
 
+#### For Raspberry Pi
+- Install VNC Server on the Raspberry Pi (the remote computer you want to control).
+- Install VNC Viewer on your local device (PC or mobile).
+- Make sure both devices are connected to the same network.
+- On the Raspberry Pi:
+  - Enable VNC in raspi-config → Interfacing Options.
+  - Start VNC Server (it will capture and transmit the Pi’s screen).
+- On your local device:
+  - Open VNC Viewer and enter the Raspberry Pi’s IP address.
+  - Log in with your Raspberry Pi credentials.
+- Once connected, the Pi’s desktop will appear on your local device, and you can control it remotely.
+- For a detailed walkthrough, see this video tutorial - https://www.youtube.com/watch?v=NWBmYnNvN3A
+
 ---
 
 ### Software
